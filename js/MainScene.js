@@ -2,17 +2,8 @@ class MainScene extends Phaser.Scene
 {
     preload()
     {
-        this.load.image('tiles','res/Tileset.png');
-        this.load.tilemapTiledJSON('map','res/Map.json');
-        this.load.image('bg-1', 'res/sky.png');
-        this.load.image('sea', 'res/sea.png');
-        this.load.image('player', 'res/idle-1.png');
-        //Phaser.Physics.Arcade.Sprite
-        // https://gammafp.com/tool/atlas-packer/
-        this.load.atlas('sprites_jugador','res/player_anim/player_anim.png',
-        'res/player_anim/player_anim_atlas.json');
-        this.load.spritesheet('tilesSprites','res/Tileset.png',
-        { frameWidth: 32, frameHeight: 32 });
+        this.resourceLoader = new ResourceLoader();
+        this.resourceLoader.loadResources(this);
     }
 
     create()
@@ -33,26 +24,8 @@ class MainScene extends Phaser.Scene
         this.cameras.main.startFollow(this.player);
         this.cameras.main.setBounds(0,0,map.widthInPixels,map.heightInPixels);
 
-        
-        this.objetos = map.getObjectLayer('objetos')['objects'];
-        this.setas = [];
-        for(var i = 0; i < this.objetos.length; ++i)
-        {
-            var obj = this.objetos[i];
-            if(obj.gid == 115) // en mi caso la seta
-            {
-                var seta = new Seta(this,obj.x,obj.y);
-                this.setas.push(seta);
-                this.physics.add.overlap(seta, this.player, this.spriteHit,null,this);
-            }
-        }
-        this.score = 1;
-        this.scoreText = this.add.text(16, 16, 'PUNTOS: '+this.score, { 
-            fontSize: '20px', 
-            fill: '#000', 
-            fontFamily: 'verdana, arial, sans-serif' 
-          });
-        
+        this.objecCreator = new ObjectCreator();
+        this.objecCreator.createObjects(this, map);
     }
 
     spriteHit (sprite1, sprite2) {
