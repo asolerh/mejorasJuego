@@ -2,8 +2,8 @@ class MainScene extends Phaser.Scene
 {
     preload()
     {
-        this.resourceLoader = new ResourceLoader();
-        this.resourceLoader.loadResources(this);
+        this.resourceLoader = new ResourceLoader(this);
+        this.resourceLoader.loadResources();
     }
 
     create()
@@ -24,18 +24,39 @@ class MainScene extends Phaser.Scene
         this.cameras.main.startFollow(this.player);
         this.cameras.main.setBounds(0,0,map.widthInPixels,map.heightInPixels);
 
-        this.objecCreator = new ObjectCreator();
-        this.objecCreator.createObjects(this, map);
-    }
+        this.objecCreator = new ObjectCreator(this, map);
+        this.objecCreator.createObjects();
 
+    }
+    
     spriteHit (sprite1, sprite2) {
-
+        
         sprite1.destroy();
- 
+        
     }
-
+    
     update (time, delta)
     {
         this.player.update(time,delta);
+        // Comprobamos si la y del jugador es mayor  a 420 (final del mapa)
+        if(this.player.y > 420) {
+            /* Hay dos opciones añadir una pantalla de muerte o de reinicio o directamente reiniciar
+             en este caso reiniciaremos directamente al llamar al metodo restartLevel hacemos una llamadqa
+             al metodo create que vuelve a poner todos los elementos de forma inicial
+             */
+
+            this.restartLevel()
+        }
+        if(this.player.x <= 0) {
+            /*
+            En este caso añadimos un "muro" estableciendo la posicion del jugador a 0 siempre que esta sea
+            0 o menor que 0 evitando asi que se mueva
+            */
+            this.player.x = 0
+        }
+    }
+
+    restartLevel () {
+        this.create()
     }
 }
